@@ -1,0 +1,40 @@
+<launch>
+    <!-- Arguments -->
+    <arg name="ENTITY_ID" default="megarover_01"/>
+    <arg name="SOURCE_MAP_TOPIC" default="/no_entry_layer_map"/>
+    <arg name="TARGET_MAP_TOPIC" default="/static_layer_map"/>
+    <arg name="RESULT_MAP_TOPIC" default="/cvt_no_entry_layer_map"/>
+    <arg name="CONVERSION_FACTOR_TOPIC" default="/correction_value"/>
+    <arg name="MAP_FILE" default="/home/ros/maps/no_entry_layer.yaml"/>
+	<arg name="USE_MAP_SERVER" default="false" />
+	<arg name="USE_MAP_VIEWER" default="false" />
+
+    <!-- 変換方向の指定。
+        SourceMapをTargetMapに変換する場合は”forward”
+        TargetMapをSourceMapに場合は”inverse”を設定 -->
+    <arg name="TRANCEFORM_MODE" default="inverse"/> 
+
+    <group ns="$(arg ENTITY_ID)">
+        <!-- Map server -->
+		<group if="$(arg USE_MAP_SERVER)">
+            <node pkg="map_server" name="affine_map_server" type="map_server" args="$(arg MAP_FILE)" output="screen">
+                <remap from="map" to="/$(arg ENTITY_ID)$(arg SOURCE_MAP_TOPIC)" />
+            </node>
+		</group>
+
+        <!-- Affine convertion -->
+        <node pkg="affine_trans_of_map" name="affine_trans_of_map_node" type="affine_trans_of_map_node" output="screen">
+            <param name="source_map_topic_name"     value="/$(arg ENTITY_ID)$(arg SOURCE_MAP_TOPIC)" />
+            <param name="target_map_topic_name"     value="/$(arg ENTITY_ID)$(arg TARGET_MAP_TOPIC)" />
+            <param name="converted_map_topic_name"  value="/$(arg ENTITY_ID)$(arg RESULT_MAP_TOPIC)" />
+            <param name="correct_info_topic_name"   value="/$(arg ENTITY_ID)/robot_bridge$(arg CONVERSION_FACTOR_TOPIC)" />
+            <param name="tranceform_mode"   value="$(arg TRANCEFORM_MODE)" />
+            <rosparam file="$(find affine_trans_of_map)/param/affine_trans_of_map_$(arg ENTITY_ID).yaml" command="load" />
+        </node>
+
+        <!-- rviz(視覚化ツール) -->
+		<group if="$(arg USE_MAP_VIEWER)">
+            <node pkg="rviz" type="rviz" args="-d '$(find affine_trans_of_map)/rviz/affine_trans_of_map_$(arg ENTITY_ID).rviz'" name="result_rviz" respawn="true" />
+		</group>
+    </group>
+</launch>

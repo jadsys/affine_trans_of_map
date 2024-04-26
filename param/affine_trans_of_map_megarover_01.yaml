@@ -1,0 +1,59 @@
+# アフィン変換を実行する対象の地図トピック
+source_map_topic_name: /megarover_01/no_entry_layer_map
+
+# 位置合わせを行う対象の地図トピック名
+target_map_topic_name: /megarover_01/static_layer_map
+
+# アフィン変換後の地図トピック名
+converted_map_topic_name: /megarover_01/cvt_no_entry_layer_map
+
+# 地図の補正値情報取得トピック名
+correct_info_topic_name: /correction_info
+
+# トピックから取得するか
+config_from_topic:
+## 補正値情報関連
+    correct_value: true
+## 出力地図関連
+    output_map: true
+
+# 補正値情報関連
+correct_value:
+## 平行移動量
+    shift_amount:
+        # x: -0.016355248168110847
+        # y: 0.021738842129707336
+        # x: 3.7336448
+        # y: 10.7717388
+        x: 3.733
+        y: 0.55
+
+
+## 回転中心座標
+    rotation_center:
+        enable: false  # 有効化
+        x: 200
+        y: 184
+
+## 回転角度
+    rotation_angle: -0.51566202
+    # rotation_angle: 0
+
+# 出力地図関連
+output_map:
+## 地図のフレーム名
+    map_frame: map
+
+## 地図のサイズ
+    size:
+        width: 704
+        height: 672
+
+## 出力地図の原点位置の指定
+    origin:
+        x: -10.0
+        y: -24.4
+        yaw: 0.00
+
+# 不明領域の設定値
+intensity: 205

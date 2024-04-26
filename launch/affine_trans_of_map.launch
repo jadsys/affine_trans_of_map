@@ -1,0 +1,23 @@
+<launch>
+    <!-- Arguments -->
+    <arg name="source_map_file" default="/home/ros/maps/no_entry_layer.yaml"/>
+
+    <!-- 変換方向の指定。
+        SourceMapをTargetMapに変換する場合は”forward”
+        TargetMapをSourceMapに場合は”inverse”を設定 -->
+    <arg name="TRANCEFORM_MODE" default="inverse"/> 
+
+    <!-- Map server -->
+    <node pkg="map_server" name="no_entry_layer" type="map_server" args="$(arg source_map_file)" output="screen">
+        <remap from="map" to="no_entry_layer_map" />
+    </node>
+
+    <!-- Affine convertion -->
+    <node pkg="affine_trans_of_map" name="affine_trans_of_map_node" type="affine_trans_of_map_node" output="screen">
+        <param name="tranceform_mode"   value="$(arg TRANCEFORM_MODE)" />
+        <rosparam file="$(find affine_trans_of_map)/param/affine_trans_of_map.yaml" command="load" />
+    </node>
+
+    <!-- rviz(視覚化ツール) -->
+    <!-- <node pkg="rviz" type="rviz" args="-d '$(find affine_trans_of_map)/rviz/test.rviz'" name="result_rviz" respawn="true" /> -->
+</launch>
